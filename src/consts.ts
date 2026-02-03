@@ -10,7 +10,7 @@ import PendleYieldContractFactoryABI from '../abis/PendleYieldContractFactory.js
 import PendleOracleABI from '../abis/PendleOracle.json';
 import MorphoblueABI from '../abis/MorphoBlue.json';
 
-dotenv.config();
+dotenv.config({ quiet: true });
 const envSchema = z.object({
   ETH_RPC: z.string().optional(),
   ARBITRUM_RPC: z.string().optional(),

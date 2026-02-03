@@ -83,18 +83,43 @@ async function fetchUserBalanceSnapshotBatch(
 }
 
 async function main() {
-  const block = 22835503;
+  const blockArg = process.argv[2];
+  if (!blockArg) {
+    console.error('Usage: npx ts-node src/main.ts <block_number>');
+    process.exit(1);
+  }
+
+  const block = parseInt(blockArg, 10);
+  if (isNaN(block)) {
+    console.error('Error: block_number must be a valid integer');
+    process.exit(1);
+  }
 
   const res = (await fetchUserBalanceSnapshotBatch([block]))[0];
 
-  // for (const user in res.resultYT) {
-  //   if (res.resultYT[user].eq(0)) continue;
-  //   // console.log(user, res.resultYT[user].toString());
-  // }
+  const ytHolders: Record<string, string> = {};
+  for (const user in res.resultYT) {
+    if (res.resultYT[user].eq(0)) continue;
+    ytHolders[user] = res.resultYT[user].toString();
+  }
 
-  // for (const user in res.resultLP) {
-  //   if (res.resultLP[user].eq(0)) continue;
-  // }
+  const lpHolders: Record<string, string> = {};
+  for (const user in res.resultLP) {
+    if (res.resultLP[user].eq(0)) continue;
+    lpHolders[user] = res.resultLP[user].toString();
+  }
+
+  const output = {
+    block,
+    ytHolders,
+    lpHolders,
+    summary: {
+      ytHolderCount: Object.keys(ytHolders).length,
+      lpHolderCount: Object.keys(lpHolders).length
+    }
+  };
+
+  console.log(JSON.stringify(output, null, 2));
 }
 
 main().catch(console.error);
